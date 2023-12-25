@@ -101,6 +101,54 @@ def get_pose2D(video_path, output_dir):
 
 
 def img2video(video_path, output_dir):
+    ## all
+    output_dir_2D = output_dir +'pose2D/'
+    output_dir_3D = output_dir +'pose3D/'
+    image_dir = 'results/' 
+    image_2d_dir = sorted(glob.glob(os.path.join(output_dir_2D, '*.png')))
+    image_3d_dir = sorted(glob.glob(os.path.join(output_dir_3D, '*.png')))
+
+    print('\nGenerating demo...')
+    for i in tqdm(range(len(image_2d_dir))):
+        image_2d = plt.imread(image_2d_dir[i])
+        image_3d = plt.imread(image_3d_dir[i])
+
+        ## crop
+        if image_2d.shape[1] > image_2d.shape[0]:
+            edge = (image_2d.shape[1] - image_2d.shape[0]) // 2
+            image_2d = image_2d[:, edge:image_2d.shape[1] - edge]
+        else:
+            edge = (image_2d.shape[0] - image_2d.shape[1]) // 2
+            image_2d = image_2d[edge:image_2d.shape[0] - edge, :]
+
+        edge = 130
+        image_3d = image_3d[edge:image_3d.shape[0] - edge, edge:image_3d.shape[1] - edge]
+
+        ## show
+        font_size = 12
+        fig = plt.figure(figsize=(15.0, 5.4))
+        ax = plt.subplot(121)
+        showimage(ax, image_2d)
+        ax.set_title("Input", fontsize = font_size)
+
+        ax = plt.subplot(122)
+        showimage(ax, image_3d)
+        ax.set_title("Reconstruction", fontsize = font_size)
+
+        ## save
+        output_dir_pose = output_dir +'pose/'
+        os.makedirs(output_dir_pose, exist_ok=True)
+        # plt.axis('off')
+        # plt.gcf().set_size_inches(512 / 100, 512 / 100)
+        # plt.gca().xaxis.set_major_locator(plt.NullLocator())
+        # plt.gca().yaxis.set_major_locator(plt.NullLocator())
+        plt.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
+        plt.margins(0, 0)
+        plt.savefig(output_dir_pose + str(('%04d'% i)) + '_pose.png', dpi=200, bbox_inches = 'tight')
+        # plt.savefig(output_dir_pose + str(('%04d'% i)) + '_pose.pdf', dpi=200, bbox_inches = 'tight')
+        plt.clf()
+        plt.close(ｆig)
+
     cap = cv2.VideoCapture(video_path)
     fps = int(cap.get(cv2.CAP_PROP_FPS)) + 5
 
@@ -235,47 +283,6 @@ def get_pose3D(video_path, output_dir):
         
     print('Generating 3D pose successful!')
 
-    ## all
-    image_dir = 'results/' 
-    image_2d_dir = sorted(glob.glob(os.path.join(output_dir_2D, '*.png')))
-    image_3d_dir = sorted(glob.glob(os.path.join(output_dir_3D, '*.png')))
-
-    print('\nGenerating demo...')
-    for i in tqdm(range(len(image_2d_dir))):
-        image_2d = plt.imread(image_2d_dir[i])
-        image_3d = plt.imread(image_3d_dir[i])
-
-        ## crop
-        edge = (image_2d.shape[1] - image_2d.shape[0]) // 2
-        image_2d = image_2d[:, edge:image_2d.shape[1] - edge]
-
-        edge = 130
-        image_3d = image_3d[edge:image_3d.shape[0] - edge, edge:image_3d.shape[1] - edge]
-
-        ## show
-        font_size = 12
-        fig = plt.figure(figsize=(15.0, 5.4))
-        ax = plt.subplot(121)
-        showimage(ax, image_2d)
-        ax.set_title("Input", fontsize = font_size)
-
-        ax = plt.subplot(122)
-        showimage(ax, image_3d)
-        ax.set_title("Reconstruction", fontsize = font_size)
-
-        ## save
-        output_dir_pose = output_dir +'pose/'
-        os.makedirs(output_dir_pose, exist_ok=True)
-        # plt.axis('off')
-        # plt.gcf().set_size_inches(512 / 100, 512 / 100)
-        # plt.gca().xaxis.set_major_locator(plt.NullLocator())
-        # plt.gca().yaxis.set_major_locator(plt.NullLocator())
-        plt.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
-        plt.margins(0, 0)
-        plt.savefig(output_dir_pose + str(('%04d'% i)) + '_pose.png', dpi=200, bbox_inches = 'tight')
-        # plt.savefig(output_dir_pose + str(('%04d'% i)) + '_pose.pdf', dpi=200, bbox_inches = 'tight')
-        plt.clf()
-        plt.close(ｆig)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -289,8 +296,8 @@ if __name__ == "__main__":
     video_name = video_path.split('/')[-1].split('.')[0]
     output_dir = './demo/output/' + video_name + '/'
 
-    get_pose2D(video_path, output_dir)
-    get_pose3D(video_path, output_dir)
+    # get_pose2D(video_path, output_dir)
+    # get_pose3D(video_path, output_dir)
     img2video(video_path, output_dir)
     print('Generating demo successful!')
 
