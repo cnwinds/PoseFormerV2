@@ -50,10 +50,11 @@ If you find PoseFormerV2 useful in your research, please consider citing:
 
 The code is developed and tested under the following environment.
 
-- Python 3.8
-- PyTorch 1.11.0
-- CUDA 11.3
+- Python 3.9
+- PyTorch 2.0.1
+- CUDA 11.8
 
+```pip install torch==2.0.1 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118```
 ```pip install -r requirements.txt```
 
 ## Usage
